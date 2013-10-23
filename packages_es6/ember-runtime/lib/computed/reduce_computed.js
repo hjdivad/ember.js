@@ -196,7 +196,9 @@ DependentArraysObserver.prototype = {
   trackAdd: function (dependentKey, index, newItems) {
     var trackedArray = this.trackedArraysByGuid[dependentKey];
     if (trackedArray) {
+      Ember.Logger.log("TA+", dependentKey, trackedArray+"");
       trackedArray.addItems(index, newItems);
+      Ember.Logger.log("TA+", dependentKey, trackedArray+"");
     }
   },
 
@@ -204,7 +206,9 @@ DependentArraysObserver.prototype = {
     var trackedArray = this.trackedArraysByGuid[dependentKey];
 
     if (trackedArray) {
+      Ember.Logger.log("TA-", dependentKey, trackedArray+"");
       return trackedArray.removeItems(index, removedCount);
+      Ember.Logger.log("TA-", dependentKey, trackedArray+"");
     }
 
     return [];
@@ -246,6 +250,7 @@ DependentArraysObserver.prototype = {
         sliceIndex,
         observerContexts;
 
+    Ember.Logger.log("willΔ", dependentKey, index, removedCount, addedCount);
     observerContexts = this.trackRemove(dependentKey, normalizedIndex, normalizedRemoveCount);
 
     function removeObservers(propertyKey) {
@@ -280,6 +285,8 @@ DependentArraysObserver.prototype = {
         normalizedIndex = normalizeIndex(index, length, addedCount),
         changeMeta,
         observerContext;
+
+    Ember.Logger.log("didΔ", dependentKey, index, removedCount, addedCount);
 
     forEach(dependentArray.slice(normalizedIndex, normalizedIndex + addedCount), function (item, sliceIndex) {
       if (itemPropertyKeys) {
