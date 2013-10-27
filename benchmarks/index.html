@@ -1,14 +1,67 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="../lib/jquery-1.9.0.js"></script>
-    <script src="benchmark.js"></script>
-    <script src="runner.js"></script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Ember Benchmarks</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
   </head>
   <body>
-    <div id="error" style="color:red"></div>
-    <div class="results" data-ember-path="../dist/ember.prod.js"></div>
-    <div class="results" data-ember-path="../distold/ember.prod.js"></div>
+    <script src="vendor/loader.js"></script>
+    <script src="lib/hbs.js"></script>
+    <script src="lib/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+
+    <script src="node_modules/lodash/lodash.js"></script>
+    <script src="node_modules/benchmark/benchmark.js"></script>
+
+    <script src="implementations/ember-ccp.js"></script>
+    <script>
+      define('benchmark', [], function() {
+        return Benchmark;
+      });
+      define('Ember', [], function() {
+        return Ember;
+      });
+   </script>
+   <script src="tmp/public/ember-benchmarks.amd.js"></script>
+
+   <script>
+     require('main').run();
+   </script>
+
+   <script type="text/x-handlebars">
+     <div class="container">
+       {{outlet}}
+     </div>
+   </script>
+   <script type="text/x-handlebars" id="index">
+     <div class="page-header">
+       <h2>Ember Benchmarks</h2>
+       <p class="lead">Benchmarks yo.</p>
+     </div>
+     <table class="table table-hover">
+       <thead>
+         <tr>
+           <th>Suite Name</th>
+           <th>Benchmark</th>
+         </tr>
+       </thead>
+       <tbody>
+         {{#each suites}}
+           <tr>
+             <td {{bind-attr
+rowSpan=suiteInfo.benchmarksCount}}>{{suiteInfo.name}}</td>
+           </tr>
+           {{#each benchmarks}}
+             <tr><td {{bind-attr class="isFastest:success:danger"}}
+colspan="2">{{benchmarkInfo}}</td></tr>
+           {{else}}
+             <tr><td>Running benchmarks...</td></tr>
+           {{/each}}
+         {{/each}}
+       </tbody>
+     </table>
+   </script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 require('ember-runtime/system/object');
+require('ember-runtime/system/string');
 
 /**
 @module ember

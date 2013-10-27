@@ -1,4 +1,4 @@
-/*global jQuery Benchmark BenchWarmer:true*/
+/*global $ Benchmark BenchWarmer:true*/
 
 var embers = {
   before: "../distold/ember.prod.js",
@@ -6,7 +6,7 @@ var embers = {
 };
 
 function makeiframe(emberPath, suitePath, suiteCode, profile, callback) {
-  var iframe = jQuery("<iframe>").appendTo("body")[0];
+  var iframe = $("<iframe>").appendTo("body")[0];
   var write = function(str) { iframe.contentDocument.write(str); };
 
   var name = emberPath + ": " + suitePath;
@@ -24,7 +24,7 @@ function makeiframe(emberPath, suitePath, suiteCode, profile, callback) {
   var bench, before;
 
   var logger = function(string) {
-    jQuery("[data-ember-path='" + emberPath + "']").html(emberPath + ": " + string);
+    $("[data-ember-path='" + emberPath + "']").html(emberPath + ": " + string);
   };
 
   function wait() {
@@ -41,17 +41,17 @@ function makeiframe(emberPath, suitePath, suiteCode, profile, callback) {
 
 function loadSuite(suitePath, callback) {
   function fail() {
-    jQuery('#error').text('Failed to load suite: '+suitePath);
+    $('#error').text('Failed to load suite: '+suitePath);
   }
 
-  jQuery.ajax({
+  $.ajax({
     url: suitePath,
     async: false,
     dataType: 'text'
   }).then(callback, fail);
 }
 
-jQuery(function() {
+$(function() {
 
   var query = window.location.search;
   var decoded = decodeURIComponent(query).slice(1).split(/[&=]/);
