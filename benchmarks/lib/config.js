@@ -1,19 +1,27 @@
+/* jshint esnext:true */
+
 var adapters = {
-  ccp: {
+  noCCP: {
     Ember: require('Ember')
-  }
+  },
+  ccpFlagged: {
+    Ember: require('EmberCCPFlagged')
+  },
+  ccp: {
+    Ember: require('EmberCCPOn')
+  },
 };
 
-var logToConsole = false;
+export var logToConsole = true;
 
-var implementations = Object.keys(adapters).filter(function(name) {
+export var implementations = Object.keys(adapters).filter(function(name) {
   return adapters[name].Ember;
 });
 
-function lookupFeature(implementation, item) {
+export function lookupFeature(implementation, item) {
   return adapters[implementation][item];
 }
 
-export lookupFeature;
-export implementations;
-export logToConsole;
+// export lookupFeature;
+// export implementations;
+// export logToConsole;

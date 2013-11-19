@@ -14,11 +14,11 @@ import { suite as obj_obsrv } from './suites/object/object_with_observer_create'
 
 var suites = [
       ccp_get,
-      ccp_create,
-      obj,
-      obj_scalar,
-      obj_cp,
-      obj_obsrv
+      // ccp_create,
+      // obj,
+      // obj_scalar,
+      // obj_cp,
+      // obj_obsrv
     ],
     indexController = app.__container__.lookup('controller:index'),
     currentSuite    = {};
