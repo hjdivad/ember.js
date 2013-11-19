@@ -525,77 +525,90 @@ function ReduceComputedProperty(options) {
     }, this);
   };
 
-  this.func = makeLazyFunc(function (propertyName) {
-    Ember.assert("Computed reduce values require at least one dependent key", cp._dependentKeys);
 
-    recompute.call(this, propertyName);
+  if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+    this.func = makeLazyFunc(function (propertyName) {
+      Ember.assert("Computed reduce values require at least one dependent key", cp._dependentKeys);
 
-    return cp._instanceMeta(this, propertyName).getValue();
-  }, cp);
+      recompute.call(this, propertyName);
+
+      return cp._instanceMeta(this, propertyName).getValue();
+    }, cp);
+  } else {
+    this.func = function (propertyName) {
+      Ember.assert("Computed reduce values require at least one dependent key", cp._dependentKeys);
+
+      recompute.call(this, propertyName);
+
+      return cp._instanceMeta(this, propertyName).getValue();
+    };
+  }
 }
 
-function makeLazyFunc(func, cp) {
-  var arityThreeFunc = function (propertyName, value, cachedValue) {
-    var mixin, reifiedCPargs;
+if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+  var makeLazyFunc = function (func, cp) {
+    var arityThreeFunc = function (propertyName, value, cachedValue) {
+      var mixin, reifiedCPargs;
 
-    if (cp._dependentCPs.length) {
-      mixin = {};
+      if (cp._dependentCPs.length) {
+        mixin = {};
 
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
 
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
 
-      this.reopen(mixin);
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    }, arityTwoFunc = function (propertyName, value) {
+      var mixin, reifiedCPargs;
+
+      if (cp._dependentCPs.length) {
+        mixin = {};
+
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
+
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    }, arityOneFunc = function (propertyName) {
+      var mixin, reifiedCPargs;
+
+      if (cp._dependentCPs.length) {
+        mixin = {};
+
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
+
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    };
+
+    switch (func.length) {
+      case 2:
+        return arityTwoFunc;
+      case 3:
+        return arityThreeFunc;
+      default:
+        return arityOneFunc;
     }
-    return func.apply(this, arguments);
-  }, arityTwoFunc = function (propertyName, value) {
-    var mixin, reifiedCPargs;
-
-    if (cp._dependentCPs.length) {
-      mixin = {};
-
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
-
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-      this.reopen(mixin);
-    }
-    return func.apply(this, arguments);
-  }, arityOneFunc = function (propertyName) {
-    var mixin, reifiedCPargs;
-
-    if (cp._dependentCPs.length) {
-      mixin = {};
-
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
-
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-      this.reopen(mixin);
-    }
-    return func.apply(this, arguments);
   };
-
-  switch (func.length) {
-    case 2:
-      return arityTwoFunc;
-    case 3:
-      return arityThreeFunc;
-    default:
-      return arityOneFunc;
-  }
 }
 
 Ember.ReduceComputedProperty = ReduceComputedProperty;

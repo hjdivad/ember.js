@@ -17,17 +17,24 @@ Ember.warn("The CP_DEFAULT_CACHEABLE flag has been removed and computed properti
 
 var get = Ember.get,
     set = Ember.set,
-    assert = Ember.assert,
     metaFor = Ember.meta,
-    guidFor = Ember.guidFor,
     a_slice = [].slice,
-    forEach = Ember.EnumerableUtils.forEach,
-    map = Ember.EnumerableUtils.map,
-    filter = Ember.EnumerableUtils.filter,
     o_create = Ember.create,
     META_KEY = Ember.META_KEY,
     watch = Ember.watch,
     unwatch = Ember.unwatch;
+
+
+if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+  var assert = Ember.assert,
+      guidFor = Ember.guidFor,
+      forEach = Ember.EnumerableUtils.forEach,
+      map = Ember.EnumerableUtils.map,
+      filter = Ember.EnumerableUtils.filter;
+}
+
+if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+}
 
 if (Ember.FEATURES.isEnabled('propertyBraceExpansion')) {
   var expandProperties = Ember.expandProperties;
@@ -104,102 +111,105 @@ function removeDependentKeys(desc, obj, keyName, meta) {
   }
 }
 
-function implicitKey(cp) {
-  return [guidFor(cp)].concat(cp._dependentKeys).join('_');
-}
-
-function normalizeDependentKeys(keys) {
-  return map(keys, function (key) {
-    if (typeof key === "string" || key instanceof String) {
-      return key;
-    } else if (key instanceof Ember.ComputedProperty) {
-      return implicitKey(key);
-    } else {
-      assert("Unexpected dependent key  " + key + " of type " + typeof(key), false);
-    }
-  });
-}
-
-function selectDependentCPs(keys) {
-  return filter(keys, function (key) {
-    return key instanceof ComputedProperty;
-  });
-}
-
-function setDependentKeys(cp, dependentKeys) {
-  if (dependentKeys) {
-    cp._dependentKeys = normalizeDependentKeys(dependentKeys);
-    cp._dependentCPs = selectDependentCPs(dependentKeys);
-    cp.implicitCPKey = implicitKey(cp);
-  } else {
-    cp._dependentKeys = cp._dependentCPs = [];
-    delete cp.implicitCPKey;
-  }
-}
-
-function makeLazyFunc(func, cp) {
-  var arityThreeFunc = function (propertyName, value, cachedValue) {
-    var mixin, reifiedCPargs;
-
-    if (cp._dependentCPs.length) {
-      mixin = {};
-
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
-
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-      this.reopen(mixin);
-    }
-    return func.apply(this, arguments);
-  }, arityTwoFunc = function (propertyName, value) {
-    var mixin, reifiedCPargs;
-
-    if (cp._dependentCPs.length) {
-      mixin = {};
-
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
-
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-      this.reopen(mixin);
-    }
-    return func.apply(this, arguments);
-  }, arityOneFunc = function (propertyName) {
-    var mixin, reifiedCPargs;
-
-    if (cp._dependentCPs.length) {
-      mixin = {};
-
-      forEach(cp._dependentCPs, function (dependentCP) {
-        mixin[dependentCP.implicitCPKey] = dependentCP;
-      }, this);
-
-      reifiedCPargs = a_slice.call(cp._dependentKeys);
-      reifiedCPargs.push(func);
-      mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-      this.reopen(mixin);
-    }
-    return func.apply(this, arguments);
+if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+  var implicitKey = function (cp) {
+    return [guidFor(cp)].concat(cp._dependentKeys).join('_');
   };
 
-  switch (func.length) {
-    case 2:
-      return arityTwoFunc;
-    case 3:
-      return arityThreeFunc;
-    default:
-      return arityOneFunc;
-  }
+  var normalizeDependentKeys = function (keys) {
+    return map(keys, function (key) {
+      if (typeof key === "string" || key instanceof String) {
+        return key;
+      } else if (key instanceof Ember.ComputedProperty) {
+        return implicitKey(key);
+      } else {
+        assert("Unexpected dependent key  " + key + " of type " + typeof(key), false);
+      }
+    });
+  };
+
+  var selectDependentCPs = function (keys) {
+    return filter(keys, function (key) {
+      return key instanceof ComputedProperty;
+    });
+  };
+
+  var setDependentKeys = function(cp, dependentKeys) {
+    if (dependentKeys) {
+      cp._dependentKeys = normalizeDependentKeys(dependentKeys);
+      cp._dependentCPs = selectDependentCPs(dependentKeys);
+      cp.implicitCPKey = implicitKey(cp);
+    } else {
+      cp._dependentKeys = cp._dependentCPs = [];
+      delete cp.implicitCPKey;
+    }
+  };
+
+  var makeLazyFunc = function(func, cp) {
+    var arityThreeFunc = function (propertyName, value, cachedValue) {
+      var mixin, reifiedCPargs;
+
+      if (cp._dependentCPs.length) {
+        mixin = {};
+
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
+
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    }, arityTwoFunc = function (propertyName, value) {
+      var mixin, reifiedCPargs;
+
+      if (cp._dependentCPs.length) {
+        mixin = {};
+
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
+
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    }, arityOneFunc = function (propertyName) {
+      var mixin, reifiedCPargs;
+
+      if (cp._dependentCPs.length) {
+        mixin = {};
+
+        forEach(cp._dependentCPs, function (dependentCP) {
+          mixin[dependentCP.implicitCPKey] = dependentCP;
+        }, this);
+
+        reifiedCPargs = a_slice.call(cp._dependentKeys);
+        reifiedCPargs.push(func);
+        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
+
+        this.reopen(mixin);
+      }
+      return func.apply(this, arguments);
+    };
+
+    switch (func.length) {
+      case 2:
+        return arityTwoFunc;
+      case 3:
+        return arityThreeFunc;
+      default:
+        return arityOneFunc;
+    }
+  };
 }
+
 
 // ..........................................................
 // COMPUTED PROPERTY
@@ -287,10 +297,15 @@ function makeLazyFunc(func, cp) {
   @constructor
 */
 function ComputedProperty(func, opts) {
-  this.func = makeLazyFunc(func, this);
+  if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+    this.func = makeLazyFunc(func, this);
+    setDependentKeys(this, opts && opts.dependentKeys);
+  } else {
+    this.func = func;
+    this._dependentKeys = opts && opts.dependentKeys;
+  }
 
   this._cacheable = (opts && opts.cacheable !== undefined) ? opts.cacheable : true;
-  setDependentKeys(this, opts && opts.dependentKeys);
   this._readOnly = opts && (opts.readOnly !== undefined || !!opts.readOnly);
 }
 
@@ -299,12 +314,14 @@ ComputedProperty.prototype = new Ember.Descriptor();
 
 var ComputedPropertyPrototype = ComputedProperty.prototype;
 
-ComputedPropertyPrototype.toString = function() {
-  if (this.implicitCPKey) {
-    return this.implicitCPKey;
-  }
-  return Ember.Descriptor.prototype.toString.apply(this, arguments);
-};
+if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+  ComputedPropertyPrototype.toString = function() {
+    if (this.implicitCPKey) {
+      return this.implicitCPKey;
+    }
+    return Ember.Descriptor.prototype.toString.apply(this, arguments);
+  };
+}
 
 /**
   Properties are cacheable by default. Computed property will automatically
@@ -405,7 +422,12 @@ ComputedPropertyPrototype.property = function() {
     args = a_slice.call(arguments);
   }
 
-  setDependentKeys(this, args);
+  if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+    setDependentKeys(this, args);
+  } else {
+    this._dependentKeys = args;
+  }
+
   return this;
 };
 

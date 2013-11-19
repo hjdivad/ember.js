@@ -56,8 +56,10 @@ get = function get(obj, keyName) {
     obj = null;
   }
 
-  if (keyName instanceof Ember.ComputedProperty && keyName.implicitCPKey) {
-    keyName = keyName.implicitCPKey;
+  if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+    if (keyName instanceof Ember.ComputedProperty && keyName.implicitCPKey) {
+      keyName = keyName.implicitCPKey;
+    }
   }
 
   Ember.assert("Cannot call get with "+ keyName +" key.", !!keyName);
