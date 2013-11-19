@@ -7,6 +7,7 @@ require('ember-metal/property_set');
 require('ember-metal/properties');
 require('ember-metal/watching');
 require('ember-metal/property_events');
+require('ember-metal/composable_computed');
 
 /**
 @module ember-metal
@@ -26,14 +27,10 @@ var get = Ember.get,
 
 
 if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
-  var assert = Ember.assert,
-      guidFor = Ember.guidFor,
-      forEach = Ember.EnumerableUtils.forEach,
-      map = Ember.EnumerableUtils.map,
-      filter = Ember.EnumerableUtils.filter;
-}
-
-if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
+  var normalizeDependentKeys = Ember.ComputedHelpers.normalizeDependentKeys,
+      selectDependentCPs = Ember.ComputedHelpers.selectDependentCPs,
+      setDependentKeys = Ember.ComputedHelpers.setDependentKeys,
+      makeLazyFunc = Ember.ComputedHelpers.makeLazyFunc;
 }
 
 if (Ember.FEATURES.isEnabled('propertyBraceExpansion')) {
@@ -110,106 +107,6 @@ function removeDependentKeys(desc, obj, keyName, meta) {
     unwatch(obj, depKey);
   }
 }
-
-if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
-  var implicitKey = function (cp) {
-    return [guidFor(cp)].concat(cp._dependentKeys).join('_');
-  };
-
-  var normalizeDependentKeys = function (keys) {
-    return map(keys, function (key) {
-      if (typeof key === "string" || key instanceof String) {
-        return key;
-      } else if (key instanceof Ember.ComputedProperty) {
-        return implicitKey(key);
-      } else {
-        assert("Unexpected dependent key  " + key + " of type " + typeof(key), false);
-      }
-    });
-  };
-
-  var selectDependentCPs = function (keys) {
-    return filter(keys, function (key) {
-      return key instanceof ComputedProperty;
-    });
-  };
-
-  var setDependentKeys = function(cp, dependentKeys) {
-    if (dependentKeys) {
-      cp._dependentKeys = normalizeDependentKeys(dependentKeys);
-      cp._dependentCPs = selectDependentCPs(dependentKeys);
-      cp.implicitCPKey = implicitKey(cp);
-    } else {
-      cp._dependentKeys = cp._dependentCPs = [];
-      delete cp.implicitCPKey;
-    }
-  };
-
-  var makeLazyFunc = function(func, cp) {
-    var arityThreeFunc = function (propertyName, value, cachedValue) {
-      var mixin, reifiedCPargs;
-
-      if (cp._dependentCPs.length) {
-        mixin = {};
-
-        forEach(cp._dependentCPs, function (dependentCP) {
-          mixin[dependentCP.implicitCPKey] = dependentCP;
-        }, this);
-
-        reifiedCPargs = a_slice.call(cp._dependentKeys);
-        reifiedCPargs.push(func);
-        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-        this.reopen(mixin);
-      }
-      return func.apply(this, arguments);
-    }, arityTwoFunc = function (propertyName, value) {
-      var mixin, reifiedCPargs;
-
-      if (cp._dependentCPs.length) {
-        mixin = {};
-
-        forEach(cp._dependentCPs, function (dependentCP) {
-          mixin[dependentCP.implicitCPKey] = dependentCP;
-        }, this);
-
-        reifiedCPargs = a_slice.call(cp._dependentKeys);
-        reifiedCPargs.push(func);
-        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-        this.reopen(mixin);
-      }
-      return func.apply(this, arguments);
-    }, arityOneFunc = function (propertyName) {
-      var mixin, reifiedCPargs;
-
-      if (cp._dependentCPs.length) {
-        mixin = {};
-
-        forEach(cp._dependentCPs, function (dependentCP) {
-          mixin[dependentCP.implicitCPKey] = dependentCP;
-        }, this);
-
-        reifiedCPargs = a_slice.call(cp._dependentKeys);
-        reifiedCPargs.push(func);
-        mixin[propertyName] = Ember.computed.apply(null, reifiedCPargs);
-
-        this.reopen(mixin);
-      }
-      return func.apply(this, arguments);
-    };
-
-    switch (func.length) {
-      case 2:
-        return arityTwoFunc;
-      case 3:
-        return arityThreeFunc;
-      default:
-        return arityOneFunc;
-    }
-  };
-}
-
 
 // ..........................................................
 // COMPUTED PROPERTY

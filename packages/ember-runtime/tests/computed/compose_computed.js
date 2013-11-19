@@ -17,22 +17,6 @@ if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
     }
   });
 
-  test('should mimic computed property behaviour', function() {
-    var Person = Ember.Object.extend({
-          fname: null,
-          lname: null,
-          fullName: Ember.computed('fname', 'lname', function() {
-            return this.get('fname') + ' ' + this.get('lname');
-          })
-        }),
-        tywin = Person.create({
-          fname: 'Tywin',
-          lname: 'Lanister'
-        });
-
-    equal(tywin.get('fullName'), 'Tywin Lanister');
-  });
-
   testBoth('should be able to take a computed property as a parameter for ember objects', function(get, set) {
     var not = Ember.computed.not,
         equals = Ember.computed.equal;
@@ -47,6 +31,29 @@ if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
       lastName: 'Navasardyan',
       state: 'sleepy'
     });
+
+    equal(get(obj, 'firstName'), 'Alex');
+    equal(get(obj, 'lastName'), 'Navasardyan');
+
+    equal(get(obj, 'state'), 'sleepy');
+    equal(get(obj, 'napTime'), false);
+
+    set(obj, 'state', 'not sleepy');
+    equal(get(obj, 'state'), 'not sleepy');
+    equal(get(obj, 'napTime'), true);
+  });
+
+  testBoth('should work with plain JavaScript objects', function(get, set) {
+    var not = Ember.computed.not,
+        equals = Ember.computed.equal;
+
+    obj = {
+      firstName: 'Alex',
+      lastName: 'Navasardyan',
+      state: 'sleepy',
+    };
+
+    Ember.defineProperty(obj, 'napTime', not(equals('state', 'sleepy')));
 
     equal(get(obj, 'firstName'), 'Alex');
     equal(get(obj, 'lastName'), 'Navasardyan');
