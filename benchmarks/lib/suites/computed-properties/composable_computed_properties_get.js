@@ -10,14 +10,14 @@ implementations.forEach(function(implementation) {
       not      = ember.computed.not,
       equals = ember.computed.equal,
       obj      = null,
-      ObjClass = Ember.Object.extend({
+      ObjClass = ember.Object.extend({
         stateSleepy: equals('state', 'sleepy'),
         napTime: not('stateSleepy')
       }),
       ObjClass2 = {};
 
   if (ember.ComputedHelpers) {
-    ObjClass2 = Ember.Object.extend({
+    ObjClass2 = ember.Object.extend({
         napTime: not(equals('state', 'sleepy')),
     });
 

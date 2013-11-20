@@ -16,7 +16,7 @@ import { suite as obj_obsrv } from './suites/object/object_with_observer_create'
 
 var suites = [
       ccp_get,
-      // ccp_create
+      ccp_create
       // obj,
       // obj_scalar,
       // obj_cp,
@@ -47,6 +47,11 @@ function groupEnd() {
 }
 
 function onError(event) {
+  indexController.get('benchmarkErrors').pushObject({
+    name: event.target.name,
+    benchmarkName: event.currentTarget.name,
+    error: event.target.error
+  });
   if (logging) {
     console.error('Error occured "' + event.target.error.message + '" in ' + event.target.name);
   }

@@ -12,7 +12,7 @@ var adapters = {
   },
 };
 
-export var logToConsole = false;
+export var logToConsole = true;
 
 export var implementations = Object.keys(adapters).filter(function(name) {
   return adapters[name].Ember;

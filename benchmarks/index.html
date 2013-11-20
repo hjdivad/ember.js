@@ -12,6 +12,14 @@
 
     <script src="node_modules/lodash/lodash.js"></script>
     <script src="node_modules/benchmark/benchmark.js"></script>
+    <style>
+      .row {
+        padding-top: 2em;
+      }
+      .light {
+        font-weight: 200;
+      }
+    </style>
 
     <script>
       define('benchmark', [], function() {
@@ -71,28 +79,53 @@
        <h2>Ember Benchmarks</h2>
        <p class="lead">Benchmarks yo.</p>
      </div>
-     <table class="table table-hover">
-       <thead>
-         <tr>
-           <th>Suite Name</th>
-           <th>Benchmark</th>
-         </tr>
-       </thead>
-       <tbody>
-         {{#each suites}}
+     <div class="row">
+       <table class="table table-hover">
+         <thead>
            <tr>
-             <td {{bind-attr
-rowSpan=suiteInfo.benchmarksCount}}>{{suiteInfo.name}}</td>
+             <th>Suite Name</th>
+             <th>Benchmark</th>
            </tr>
-           {{#each benchmarks}}
-             <tr><td {{bind-attr class="isFastest:success:danger"}}
-colspan="2">{{benchmarkInfo}}</td></tr>
-           {{else}}
-             <tr><td>Running benchmarks...</td></tr>
+         </thead>
+         <tbody>
+           {{#each suites}}
+             <tr>
+               <td {{bind-attr
+  rowSpan=suiteInfo.benchmarksCount}}>{{suiteInfo.name}}</td>
+             </tr>
+             {{#each benchmarks}}
+               <tr><td {{bind-attr class="isFastest:success:danger"}}
+  colspan="2">{{benchmarkInfo}}</td></tr>
+             {{else}}
+               <tr><td>Running benchmarks...</td></tr>
+             {{/each}}
            {{/each}}
-         {{/each}}
-       </tbody>
-     </table>
+         </tbody>
+       </table>
+     </div>
+     <div class="row">
+       {{#if benchmarkErrors.length}}
+         <h3 class="light">Errors</h3>
+         <table class="table table-hover errors">
+           <thead>
+             <tr>
+               <th>Suite Name</th>
+               <th>Benchmark</th>
+               <th>Message</th>
+             </tr>
+           </thead>
+           <tbody>
+             {{#each benchmarkErrors}}
+               <tr>
+                 <td>{{benchmarkName}}</td>
+                 <td>{{name}}</td>
+                 <td class="danger">{{error.message}}</td>
+               </tr>
+             {{/each}}
+           </tbody>
+         </table>
+       {{/if}}
+     </div>
    </script>
   </body>
 </html>
