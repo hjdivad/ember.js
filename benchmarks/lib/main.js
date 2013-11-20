@@ -1,3 +1,5 @@
+/* jshint esnext:true */
+
 import Benchmark from 'benchmark';
 import app from 'app';
 
@@ -14,7 +16,7 @@ import { suite as obj_obsrv } from './suites/object/object_with_observer_create'
 
 var suites = [
       ccp_get,
-      // ccp_create,
+      // ccp_create
       // obj,
       // obj_scalar,
       // obj_cp,
@@ -41,6 +43,12 @@ function groupStart(message) {
 function groupEnd() {
   if (logging) {
     console.groupEnd();
+  }
+}
+
+function onError(event) {
+  if (logging) {
+    console.error('Error occured "' + event.target.error.message + '" in ' + event.target.name);
   }
 }
 
@@ -84,6 +92,9 @@ function run() {
   .on('complete', function(event) {
     onComplete.call(this, event);
   })
+  // .on('error', function(event) {
+    // onError.call(this, event);
+  // })
   .run({ async: true });
 }
 

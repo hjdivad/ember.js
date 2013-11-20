@@ -4,9 +4,9 @@ var adapters = {
   noCCP: {
     Ember: require('Ember')
   },
-  ccpFlagged: {
-    Ember: require('EmberCCPFlagged')
-  },
+  // ccpFlagged: {
+    // Ember: require('EmberCCPFlagged')
+  // },
   ccp: {
     Ember: require('EmberCCPOn')
   },
@@ -21,7 +21,3 @@ export var implementations = Object.keys(adapters).filter(function(name) {
 export function lookupFeature(implementation, item) {
   return adapters[implementation][item];
 }
-
-// export lookupFeature;
-// export implementations;
-// export logToConsole;

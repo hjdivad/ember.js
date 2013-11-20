@@ -8,7 +8,7 @@
 // ==========================================================================
 
 
- // Version: 1.3.0-beta.1+canary.751dfdb0
+ // Version: 1.3.0-beta.1+canary.6f1bd48b
 
 (function() {
 /*global __fail__*/
@@ -194,7 +194,7 @@ if (!Ember.testing) {
 // ==========================================================================
 
 
- // Version: 1.3.0-beta.1+canary.751dfdb0
+ // Version: 1.3.0-beta.1+canary.6f1bd48b
 
 (function() {
 var define, requireModule;
@@ -259,7 +259,7 @@ var define, requireModule;
 
   @class Ember
   @static
-  @version 1.3.0-beta.1+canary.751dfdb0
+  @version 1.3.0-beta.1+canary.6f1bd48b
 */
 
 if ('undefined' === typeof Ember) {
@@ -286,10 +286,10 @@ Ember.toString = function() { return "Ember"; };
 /**
   @property VERSION
   @type String
-  @default '1.3.0-beta.1+canary.751dfdb0'
+  @default '1.3.0-beta.1+canary.6f1bd48b'
   @final
 */
-Ember.VERSION = '1.3.0-beta.1+canary.751dfdb0';
+Ember.VERSION = '1.3.0-beta.1+canary.6f1bd48b';
 
 /**
   Standard environmental variables. You can define these in a global `ENV`

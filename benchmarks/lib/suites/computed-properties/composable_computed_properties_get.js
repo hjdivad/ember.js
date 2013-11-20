@@ -6,37 +6,37 @@ import { implementations, lookupFeature } from '../../config';
 export var suite = new Benchmark.Suite('Composable Computed Properties - Get');
 
 implementations.forEach(function(implementation) {
-  var ember  = lookupFeature(implementation, 'Ember'),
-      not    = ember.computed.not,
-      obj    = null,
-      equals = ember.computed.equal;
+  var ember    = lookupFeature(implementation, 'Ember'),
+      not      = ember.computed.not,
+      equals = ember.computed.equal,
+      obj      = null,
+      ObjClass = Ember.Object.extend({
+        stateSleepy: equals('state', 'sleepy'),
+        napTime: not('stateSleepy')
+      }),
+      ObjClass2 = {};
 
   suite.add(implementation + ': create explicit cp retrieve once', function(){
-    obj = ember.Object.extend({
-      stateSleepy: equals('state', 'sleepy'),
-      napTime: not('stateSleepy'),
-    }).create({
+    obj = ObjClass.create({
       name: 'Alex',
       state: 'happy'
     });
 
-    obj.get('state');
+    obj.get('napTime');
   });
 
   if (ember.ComputedHelpers) {
-    suite.add(implementation + ': create ccp retrieve once', function(){
-      obj = ember.Object.extend({
+    ObjClass2 = Ember.Object.extend({
         napTime: not(equals('state', 'sleepy')),
-      }).create({
+    });
+
+    suite.add(implementation + ': create ccp retrieve once', function(){
+      obj = ObjClass2.create({
         name: 'Alex',
-        state: 'happy',
+        state: 'happy'
       });
 
       obj.get('napTime');
     });
   }
 });
-
-// implementations.forEach(function(implementation) {
-//   // TODO: create obj outside of test & run get many times
-// });
