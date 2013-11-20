@@ -92,9 +92,9 @@ function run() {
   .on('complete', function(event) {
     onComplete.call(this, event);
   })
-  // .on('error', function(event) {
-    // onError.call(this, event);
-  // })
+  .on('error', function(event) {
+    onError.call(this, event);
+  })
   .run({ async: true });
 }
 

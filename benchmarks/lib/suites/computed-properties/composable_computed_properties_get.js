@@ -16,15 +16,6 @@ implementations.forEach(function(implementation) {
       }),
       ObjClass2 = {};
 
-  suite.add(implementation + ': create explicit cp retrieve once', function(){
-    obj = ObjClass.create({
-      name: 'Alex',
-      state: 'happy'
-    });
-
-    obj.get('napTime');
-  });
-
   if (ember.ComputedHelpers) {
     ObjClass2 = Ember.Object.extend({
         napTime: not(equals('state', 'sleepy')),
@@ -32,6 +23,15 @@ implementations.forEach(function(implementation) {
 
     suite.add(implementation + ': create ccp retrieve once', function(){
       obj = ObjClass2.create({
+        name: 'Alex',
+        state: 'happy'
+      });
+
+      obj.get('napTime');
+    });
+  } else {
+    suite.add(implementation + ': creates explicit cp retrieve once', function(){
+      obj = ObjClass.create({
         name: 'Alex',
         state: 'happy'
       });

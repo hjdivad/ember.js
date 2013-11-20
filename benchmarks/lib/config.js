@@ -1,18 +1,18 @@
 /* jshint esnext:true */
 
 var adapters = {
-  noCCP: {
-    Ember: require('Ember')
+  master: {
+    Ember: require('EmberMaster')
   },
-  // ccpFlagged: {
-    // Ember: require('EmberCCPFlagged')
-  // },
-  ccp: {
-    Ember: require('EmberCCPOn')
+  featureFlagged: {
+    Ember: require('EmberFeatureFlagged')
+  },
+  featured: {
+    Ember: require('EmberFeatured')
   },
 };
 
-export var logToConsole = true;
+export var logToConsole = false;
 
 export var implementations = Object.keys(adapters).filter(function(name) {
   return adapters[name].Ember;
