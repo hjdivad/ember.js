@@ -50,7 +50,7 @@ if (Ember.FEATURES.isEnabled('composableComputedProperties')) {
     obj = {
       firstName: 'Alex',
       lastName: 'Navasardyan',
-      state: 'sleepy',
+      state: 'sleepy'
     };
 
     Ember.defineProperty(obj, 'napTime', not(equals('state', 'sleepy')));
