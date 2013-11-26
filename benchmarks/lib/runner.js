@@ -33,6 +33,11 @@ function onError(event) {
 }
 
 function startSuite(event) {
+  var suiteName = event.currentTarget.name,
+      benchmark = event.target;
+
+  window.parent.postMessage(JSON.stringify({ name: suiteName, benchmark: benchmark }), 'http://localhost:8000');
+
   groupStart('[' + this.name + ']');
 }
 
