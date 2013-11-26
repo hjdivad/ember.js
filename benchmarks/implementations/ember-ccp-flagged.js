@@ -8,7 +8,7 @@
 // ==========================================================================
 
 
- // Version: 1.3.0-beta.1+canary.6f1bd48b
+// Version: 1.3.0-beta.1+canary.6f1bd48b
 
 (function() {
 /*global __fail__*/
