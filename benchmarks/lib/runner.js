@@ -3,22 +3,7 @@
 import Benchmark from 'benchmark';
 
 import { logToConsole as logging } from 'config';
-// import { suite as ccp_get } from './suites/computed-properties/composable_computed_properties_get';
-import { suite as ccp_create } from './suites/computed-properties/composable_computed_properties_create';
-// import { suite as obj } from './suites/object/object_create';
-// import { suite as obj_scalar } from './suites/object/object_create_with_scalar';
-// import { suite as obj_cp } from './suites/object/object_with_cp_create';
-// import { suite as obj_obsrv } from './suites/object/object_with_observer_create';
-// import { iframeWrapper as wrapper } from './wrapper';
-
-var suites = [
-      // ccp_get,
-      ccp_create
-      // obj,
-      // obj_scalar,
-      // obj_cp,
-      // obj_obsrv
-    ];
+import { benchmarks as suites } from 'benchmarks';
 
 // JDD will be making this change for 2.0
 Benchmark.Deferred.prototype.end = Benchmark.Deferred.prototype.resolve;
