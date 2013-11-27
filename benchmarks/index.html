@@ -28,7 +28,7 @@
        <p class="lead">Benchmarks yo.</p>
      </div>
      <div class="row">
-       <table class="table table-hover">
+       <table class="table table-hover table-striped">
          <thead>
            <tr>
              <th>Benchmark</th>
@@ -38,14 +38,18 @@
            </tr>
          </thead>
          <tbody>
-           <tr colspan="3">
-             <td>{{name}}</td>
-             {{#each benchmarks}}
-               <td>{{infoString}}</td>
-             {{else}}
-               <td>Running benchmarks...</td>
-             {{/each}}
-           </tr>
+         {{#if suites}}
+           {{#each suites}}
+             <tr colspan="3">
+               <td>{{name}}</td>
+               {{#each benchmarks}}
+                 <td {{bind-attr title=infoString}}>{{number info.hz}} ops/sec</td>
+               {{/each}}
+             </tr>
+           {{/each}}
+         {{else}}
+           <tr><td colspan="3">Running benchmarks...</td></tr>
+         {{/if}}
          </tbody>
        </table>
      </div>

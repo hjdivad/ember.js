@@ -43,7 +43,6 @@ function onCycle(event) {
       benchmark = event.target;
 
   versionedBenchmark = { version: document.title, name: suiteName, info: benchmark, infoString: benchmark.toString() };
-  // window.parent.postMessage(JSON.stringify({ version: document.title, name: suiteName, info: benchmark, infoString: benchmark.toString() }), 'http://localhost:8000');
   log('- ' + String(event.target));
 }
 

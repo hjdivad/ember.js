@@ -3,9 +3,8 @@
 
 function createFrame(name, libPath) {
   var iframe = $('<iframe>', {
-        display: 'none',
         id: name,
-        style: 'border: 0'
+        style: 'border: 0; display: none'
       }).appendTo('body')[0],
       write  = function(content) { iframe.contentDocument.write(content); };
 
