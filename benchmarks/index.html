@@ -2,20 +2,53 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
     <title>Ember Benchmarks</title>
     <script src="vendor/loader.js"></script>
     <script src="lib/dependencies/jquery.js"></script>
     <script src="lib/dependencies/hbs.js"></script>
     <script src="implementations/ember.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
     <script src="tmp/public/ember-benchmarks.amd.js"></script>
     <script>
       require('benchmark-runner').run();
-      window.addEventListener('message', function(event) {
-        if (event.origin === 'http://localhost:8000') {
-          console.log(JSON.parse(event.data));
-        }
-      }, false);
+      require('app');
     </script>
   </head>
-  <body></body>
+  <body>
+    <script type="text/x-handlebars">
+     <div class="container">
+       {{outlet}}
+     </div>
+   </script>
+   <script type="text/x-handlebars" id="index">
+     <div class="page-header">
+       <h2>Ember Benchmarks</h2>
+       <p class="lead">Benchmarks yo.</p>
+     </div>
+     <div class="row">
+       <table class="table table-hover">
+         <thead>
+           <tr>
+             <th>Benchmark</th>
+             {{#each libNames}}
+               <th>{{this}}</th>
+             {{/each}}
+           </tr>
+         </thead>
+         <tbody>
+           <tr colspan="3">
+             <td>{{name}}</td>
+             {{#each benchmarks}}
+               <td>{{infoString}}</td>
+             {{else}}
+               <td>Running benchmarks...</td>
+             {{/each}}
+           </tr>
+         </tbody>
+       </table>
+     </div>
+   </script>
+  </body>
 </html>

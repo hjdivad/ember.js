@@ -8,6 +8,8 @@ import { benchmarks as suites } from 'benchmarks';
 // JDD will be making this change for 2.0
 Benchmark.Deferred.prototype.end = Benchmark.Deferred.prototype.resolve;
 
+var versionedBenchmark = {};
+
 function log(message) {
   if (logging) {
     console.log(message);
@@ -33,21 +35,22 @@ function onError(event) {
 }
 
 function startSuite(event) {
-  var suiteName = event.currentTarget.name,
-      benchmark = event.target;
-
-  window.parent.postMessage(JSON.stringify({ name: suiteName, benchmark: benchmark }), 'http://localhost:8000');
-
   groupStart('[' + this.name + ']');
 }
 
 function onCycle(event) {
+  var suiteName = event.currentTarget.name,
+      benchmark = event.target;
+
+  versionedBenchmark = { version: document.title, name: suiteName, info: benchmark, infoString: benchmark.toString() };
+  // window.parent.postMessage(JSON.stringify({ version: document.title, name: suiteName, info: benchmark, infoString: benchmark.toString() }), 'http://localhost:8000');
   log('- ' + String(event.target));
 }
 
 function onComplete(event) {
   groupEnd();
   log('Fastest for ' + this.name + ' is ' +  this.filter('fastest').pluck('name')[0]);
+  window.parent.postMessage(JSON.stringify(versionedBenchmark), 'http://localhost:8000');
   run();
 }
 
@@ -68,5 +71,5 @@ export function run() {
   .on('error', function(event) {
     onError.call(this, event);
   })
-  .run();
+  .run({ async: true });
 }
