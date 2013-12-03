@@ -9,9 +9,9 @@ import { suite as obj_obsrv } from './suites/object/object_with_observer_create'
 
 export var benchmarks = [
              ccpGet,
-             ccpCreate,
-             obj,
-             obj_scalar,
-             obj_cp,
-             obj_obsrv
+             // ccpCreate,
+             // obj,
+             // obj_scalar,
+             // obj_cp,
+             // obj_obsrv
            ];

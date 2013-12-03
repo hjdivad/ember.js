@@ -6844,6 +6844,8 @@ Ember.beforeObserver = function() {
       
       switch (typeOf(this)) {
         case "instance":
+          this.constructor.reopen(implicitCPMixin);
+          break;
         case "class":
           this.reopen(implicitCPMixin);
           break;
@@ -6855,6 +6857,10 @@ Ember.beforeObserver = function() {
   };
 
   var makeLazyFunc = Ember.ComputedHelpers.makeLazyFunc = function(func, cp) {
+    if (cp._dependentCPs.length === 0) {
+      return func;
+    }
+
     var arityThreeFunc = function (propertyName, value, cachedValue) {
       var args = a_slice.call(arguments);
       args.push(func);
@@ -6871,6 +6877,10 @@ Ember.beforeObserver = function() {
       args.push(cp);
       return cpFunc.apply(this, args);
     };
+
+    arityThreeFunc._lazy = true;
+    arityTwoFunc._lazy = true;
+    arityOneFunc._lazy = true;
 
     switch (func.length) {
       case 2:
@@ -7074,8 +7084,8 @@ function removeDependentKeys(desc, obj, keyName, meta) {
 */
 function ComputedProperty(func, opts) {
   
-    this.func = makeLazyFunc(func, this);
     setDependentKeys(this, opts && opts.dependentKeys);
+    this.func = makeLazyFunc(func, this);
   
   this._cacheable = (opts && opts.cacheable !== undefined) ? opts.cacheable : true;
   this._readOnly = opts && (opts.readOnly !== undefined || !!opts.readOnly);
@@ -7197,6 +7207,9 @@ ComputedPropertyPrototype.property = function() {
 
   
     setDependentKeys(this, args);
+    if (this.func && !this.func._lazy) {
+      this.func = makeLazyFunc(this.func, this);
+    }
   
   return this;
 };
