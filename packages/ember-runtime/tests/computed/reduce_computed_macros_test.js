@@ -752,6 +752,41 @@ module('Ember.computed.sort - sortProperties', {
 
 commonSortTests();
 
+test("sorts observing a self-replace fire observers for length twice", function() {
+  var observerCalls,
+      jaime = Ember.Object.extend({
+        name: Ember.computed('dep', function () {
+          return 'Jaime';
+        })
+      }).create();
+
+  obj = Ember.Object.extend({
+    sorting: Ember.A(['name:desc']),
+    sorted: Ember.computed.sort('content', 'sorting')
+  }).create({
+    content: Ember.ArrayProxy.create({
+      content: Ember.ArrayProxy.create({
+        content: Ember.ArrayProxy.create({
+          content: Ember.A([ jaime ])
+        })
+      })
+    }),
+    lengthObserver: Ember.observer(function () {
+      ++observerCalls;
+    }, 'sorted.length')
+  });
+
+  deepEqual(get(obj, 'sorted').mapBy('name'), ['Jaime'], 'precond - sorting is initially correct');
+
+  observerCalls = 0;
+
+  Ember.run(function() {
+    Ember.propertyDidChange(jaime, 'dep');
+  });
+
+  equal(observerCalls, 0, "length was updated twice: when item was removed and when it was re-added");
+});
+
 test("updating sort properties updates the sorted array", function() {
   Ember.run(function() {
     sorted = get(obj, 'sortedItems');
