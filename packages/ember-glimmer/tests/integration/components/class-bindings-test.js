@@ -4,7 +4,7 @@ import { classes } from '../../utils/test-helpers';
 import { set } from 'ember-metal/property_set';
 import { strip } from '../../utils/abstract-test-case';
 
-moduleFor('ClassNameBindings intigration', class extends RenderingTest {
+moduleFor('ClassNameBindings integration', class extends RenderingTest {
 
   ['@test it can have class name bindings']() {
     let FooBarComponent = Component.extend({
