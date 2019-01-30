@@ -21,12 +21,14 @@ export default function alias(altKey: string): AliasedProperty {
 
 export class AliasedProperty extends Descriptor implements DescriptorWithDependentKeys {
   readonly _dependentKeys: string[];
+  private _volatile: boolean;
   readonly altKey: string;
 
   constructor(altKey: string) {
     super();
     this.altKey = altKey;
     this._dependentKeys = [altKey];
+    this._volatile = false;
   }
 
   setup(obj: object, keyName: string, meta: Meta): void {

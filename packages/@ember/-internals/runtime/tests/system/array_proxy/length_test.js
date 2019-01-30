@@ -153,6 +153,7 @@ moduleFor(
     }
 
     ['@test array proxy + aliasedProperty complex test'](assert) {
+      console.log('test start-----------------------------');
       let aCalled, bCalled, cCalled, dCalled, eCalled;
 
       aCalled = bCalled = cCalled = dCalled = eCalled = 0;
@@ -160,13 +161,17 @@ moduleFor(
       let obj = EmberObject.extend({
         colors: reads('model'),
         length: reads('colors.length'),
+        // This one passes; the issue comes from the colors reads alias
+        // length: reads('model.length'),
 
-        a: observer('length', () => aCalled++),
-        b: observer('colors.length', () => bCalled++),
-        c: observer('colors.content.length', () => cCalled++),
-        d: observer('colors.[]', () => dCalled++),
-        e: observer('colors.content.[]', () => eCalled++),
+        a: observer('length', () => { console.log('length observed'); aCalled++; }),
+        b: observer('colors.length', () => { console.log('colors.length observed'); bCalled++; }),
+        c: observer('colors.content.length', () => { console.log('colors.content.length observed'); cCalled++; }),
+        d: observer('colors.[]', () => { console.log('colors.[] observed'); dCalled++; }),
+        e: observer('colors.content.[]', () => { console.log('colors.content.[] observed'); eCalled++; }),
       }).create();
+
+      console.log('create array proxy');
 
       obj.set(
         'model',
@@ -174,6 +179,8 @@ moduleFor(
           content: a(['red', 'yellow', 'blue']),
         })
       );
+
+      console.log('read');
 
       assert.equal(obj.get('colors.content.length'), 3);
       assert.equal(obj.get('colors.length'), 3);
@@ -185,10 +192,17 @@ moduleFor(
       assert.equal(dCalled, 1, 'expected observer `colors.[]` to be called ONCE');
       assert.equal(eCalled, 1, 'expected observer `colors.content.[]` to be called ONCE');
 
+      console.log('mutate');
+
+      debugger;
       obj.get('colors').pushObjects(['green', 'red']);
 
-      assert.equal(obj.get('colors.content.length'), 5);
+      console.log('read');
+
+      // depends on model.length -> model.content.length
       assert.equal(obj.get('colors.length'), 5);
+
+      assert.equal(obj.get('colors.content.length'), 5);
       assert.equal(obj.get('length'), 5);
 
       assert.equal(aCalled, 2, 'expected observer `length` to be called TWICE');
